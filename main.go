@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"math/rand"
 	"net/http"
 	"strconv"
 
@@ -25,6 +24,7 @@ type Author struct {
 }
 
 var books []Book
+var idCount = 3
 
 // Gets all books stored in books variable
 func getBooks(w http.ResponseWriter, r *http.Request) {
@@ -49,8 +49,9 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 func createBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var book Book
-	_ = json.NewDecoder(r.Body).Decode(&book)
-	book.ID = strconv.Itoa(rand.Intn(1000000))
+	json.NewDecoder(r.Body).Decode(&book)
+	book.ID = strconv.Itoa(idCount)
+	idCount++
 	books = append(books, book)
 	json.NewEncoder(w).Encode(book)
 }
@@ -62,7 +63,7 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 	for index, item := range books {
 		if item.ID == params["id"] {
 			var book Book
-			_ = json.NewDecoder(r.Body).Decode(&book)
+			json.NewDecoder(r.Body).Decode(&book)
 			books[index] = book
 			json.NewEncoder(w).Encode(book)
 			return
